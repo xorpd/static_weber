@@ -10,6 +10,10 @@
 %>
 </%def>
 
+<%def name="post_description()" buffered="True">
+A post about compiling vim with python3 support.
+</%def>
+
 <%block name="blog_post_body" filter="self.filters.mdown">
 
 First Get checkinstall. It will allow us to install vim in an ordered fashion.

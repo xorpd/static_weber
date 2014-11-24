@@ -10,6 +10,10 @@
 %>
 </%def>
 
+<%def name="post_description()" buffered="True">
+A post about the GDB debugger.
+</%def>
+
 <%block name="blog_post_body" filter="self.filters.mdown">
 
 GDB is a very powerful debugger that comes with most linux distrubutions. You
