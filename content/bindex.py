@@ -37,7 +37,8 @@ def get_blog_entries(context):
     Get the list of blog entries after fixing the time format and some
     sorting.
     """
-    b_entries = utils.inspect_directory(context,BLOGS_DIR,["post_metadata"])
+    b_entries = utils.inspect_directory(context,BLOGS_DIR,\
+            ["post_metadata","post_description"])
     fix_dates(b_entries)
     sort_by_dates(b_entries)
     return b_entries
