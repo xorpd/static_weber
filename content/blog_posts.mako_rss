@@ -1,0 +1,28 @@
+<%namespace name="bindex" module="content.bindex"/>
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+<channel>
+<title>My blog</title>
+<link>https://github.com/xorpd/static_weber</link>
+<description>Example rss for my blog</description>
+<language>en-US</language>
+
+<%
+    b_entries = bindex.get_blog_entries()
+%>
+
+% for b_entry in b_entries:
+<%
+    mdata = b_entry["props"]["post_metadata"]
+    desc = b_entry["props"]["post_description"]
+%>
+    <item>
+    <title>${mdata["title"]}</title>
+    <link>${b_entry["link_addr"]}</link>
+    <description>${desc}</description>
+    </item>
+% endfor
+
+</channel>
+</rss>
