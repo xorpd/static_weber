@@ -6,12 +6,10 @@
     "title": "Very basic GDB commands",\
     "date": "2014-09-05 11:20",\
     "author": "xorpd",\
-    "tags": ["meta","tech-struggle","gdb"]}
+    "tags": ["meta","tech-struggle","gdb"],\
+    "draft":"False",\
+    "description": "A post about the GDB debugger"}
 %>
-</%def>
-
-<%def name="post_description()" buffered="True">
-A post about the GDB debugger.
 </%def>
 
 <%block name="blog_post_body" filter="self.filters.mdown">

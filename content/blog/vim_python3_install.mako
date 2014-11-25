@@ -6,12 +6,10 @@
 	"title": "Compiling vim with python3 support",\
 	"date": "2014-09-05 11:46",\
 	"author": "xorpd",\
-	"tags": ["meta","vim","tech-struggle"]}
+	"tags": ["meta","vim","tech-struggle"],\
+        "draft":"False",\
+        "description": "A post about compiling vim with python3 support"}
 %>
-</%def>
-
-<%def name="post_description()" buffered="True">
-A post about compiling vim with python3 support.
 </%def>
 
 <%block name="blog_post_body" filter="self.filters.mdown">
