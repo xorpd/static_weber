@@ -12,13 +12,20 @@
     %>
 
     <ul>
-    % for b_entry in b_entries:
+% for b_entry in b_entries:
+<%
+    mdata = b_entry["props"]["post_metadata"]
+%>
+    ## Show only posts that are not drafts:
+    % if dict.get(mdata,"draft","False") == "False":
+
 	<li>
         <a href="${b_entry["link_addr"]}">
         ${b_entry["props"]["post_metadata"]["title"]}</a>
 	</li>
+    % endif
         
-    % endfor
+% endfor
     </ul>
 </%block>
 

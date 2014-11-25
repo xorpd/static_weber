@@ -1,3 +1,4 @@
+<%namespace name="conf_general" module="conf.general"/>
 <%namespace name="bindex" module="content.bindex"/>
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
@@ -15,13 +16,15 @@
 % for b_entry in b_entries:
 <%
     mdata = b_entry["props"]["post_metadata"]
-    desc = b_entry["props"]["post_description"]
 %>
-    <item>
-    <title>${mdata["title"]}</title>
-    <link>${b_entry["link_addr"]}</link>
-    <description>${desc}</description>
-    </item>
+    ## Show only posts that are not drafts:
+    % if dict.get(mdata,"draft","False") == "False":
+        <item>
+        <title>${mdata["title"]}</title>
+        <link>${conf_general.module.WEBSITE_ROOT_ADDR + b_entry["link_addr"]}</link>
+        <description>${mdata["description"]}</description>
+        </item>
+    % endif
 % endfor
 
 </channel>
