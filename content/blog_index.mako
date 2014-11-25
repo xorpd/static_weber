@@ -21,7 +21,7 @@
 
 	<li>
         <a href="${b_entry["link_addr"]}">
-        ${b_entry["props"]["post_metadata"]["title"]}</a>
+        ${mdata["title"]}</a>
 	</li>
     % endif
         
