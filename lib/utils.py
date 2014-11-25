@@ -56,7 +56,7 @@ def get_ext_props(fl_ext):
     props.should_render = False
     props.should_copy = False
     props.target_ext = None
-    props.output_expected = False
+    props.render_output = False
 
     if "_" in fl_ext:
         ext_parts = fl_ext.split("_")
@@ -70,35 +70,60 @@ def get_ext_props(fl_ext):
         props.should_render = True
         props.should_copy = False
         props.target_ext = ext_parts[1]
-        props.output_expected = True
+        props.render_output = True
 
     elif fl_ext == MAKO_EXT:
         props.should_render = True
         props.should_copy = False
         props.target_ext = HTML_EXT
-        props.output_expected = True
+        props.render_output = True
 
     elif fl_ext == MAKO_NO_EXT:
         props.should_render = True
         props.should_copy = False
         props.target_ext = None
-        props.output_expected = False
+        props.render_output = False
 
     elif fl_ext == MAKO_ABSTRACT_EXT:
         props.should_render = False
         props.should_copy = False
         props.target_ext = None
-        props.output_expected = False
+        props.render_output = False
 
     elif fl_ext in COPY_EXTS:
         props.should_render = False
         props.should_copy = True
+        props.target_ext = fl_ext
+        props.render_output = True
 
     # Sanity checks:
     assert not (props.should_copy and props.should_render)
-    assert not ((props.target_ext is None) and props.output_expected)
+    assert not ((props.target_ext is None) and props.render_output)
 
     return props
+
+def get_my_dest_path(context):
+    """
+    Get the destination path of the current file (The asking file).
+    The resulting path will be relative the output/ dir.
+    """
+    fl = context["my_filename"]
+    fl_ext = get_extension(fl)
+    props = get_ext_props(fl_ext)
+
+    # If there isn't going to be any output,
+    # we return None.
+    if props.target_ext is None:
+        return None
+
+    # Build new filename with new extension:
+    target_fl = change_extension(fl,props.target_ext)
+
+    # Join the relative directory and the target file name:
+    target_rel_path = os.path.join(context["my_rel_dir"],target_fl)
+
+    return os.path.normpath(target_rel_path)
+
 
 def rel_file_link(context,file_path):
     """
