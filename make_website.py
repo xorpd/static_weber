@@ -13,24 +13,12 @@ import shutil
 
 import lib.utils
 
-import collections
 
 # The content's directory name:
 CONTENT_DIR = "content"
 # The output's directory name:
 OUTPUT_DIR = "output"
 
-# Mako template file extension:
-MAKO_EXT = "mako"
-# Mako template without output:
-MAKO_NO_EXT = "makon"
-# Mako abstract template (Not rendered):
-MAKO_ABSTRACT_EXT = "makoa"
-# HTML file extension:
-HTML_EXT = "html"
-
-# Extensions of files we copy to the output tree:
-COPY_EXTS = ["html","png","gif","jpg","svg","css"]
 
 class ExceptStaticWeber(Exception):
     pass
@@ -140,7 +128,7 @@ class Website():
                                     my_output_dir=output_path,\
                                     my_rel_dir=rel_root)
 
-                    if props.output_expected:
+                    if props.render_output:
                         # Write the template's rendering result to a file at
                         # the output directory tree:
                         with open(fl_with_ext_output,"w") as fw:
