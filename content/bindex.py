@@ -38,7 +38,7 @@ def get_blog_entries(context):
     sorting.
     """
     b_entries = utils.inspect_directory(context,BLOGS_DIR,\
-            ["post_metadata","post_description"])
+            ["post_metadata"])
     fix_dates(b_entries)
     sort_by_dates(b_entries)
     return b_entries
