@@ -8,6 +8,97 @@ import json
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
+import collections
+
+# Mako template file extension:
+MAKO_EXT = "mako"
+# Mako template without output:
+MAKO_NO_EXT = "makon"
+# Mako abstract template (Not rendered):
+MAKO_ABSTRACT_EXT = "makoa"
+# HTML file extension:
+HTML_EXT = "html"
+
+# Extensions of files we copy to the output tree:
+COPY_EXTS = ["html","png","gif","jpg","svg","css"]
+
+
+def get_extension(filename):
+    """
+    Get the extension of a file (What comes right after the last dot).
+    """
+    return filename.split(".")[-1]
+
+
+def change_extension(filename,new_ext):
+    """
+    Change the extension of a file to be new_ext
+    """
+    last_dot = filename.rfind(".")
+    return filename[:last_dot] + "." + new_ext
+
+def get_ext_props(fl_ext):
+    """
+    Get the relevant properties for a given extension.
+    Generally, extension will be one of the following:
+    .mako           -- Rendered into HTML.
+    .makoa          -- Not rendered.
+    .makon          -- Rendered but output is discarded.
+    .mako_XXX       -- Rendered into file of extension XXX with the same name.
+    .jpg,.png,...   -- Copied directly to destination.
+    """
+
+    props = \
+        collections.namedtuple('props',\
+            ['should_render','should_copy','target_ext','output_expected'])
+
+    # Set defaults:
+    props.should_render = False
+    props.should_copy = False
+    props.target_ext = None
+    props.output_expected = False
+
+    if "_" in fl_ext:
+        ext_parts = fl_ext.split("_")
+        if len(ext_parts) > 2:
+            # There are too many parts:
+            raise ExceptInvalidExtension(fl_path)
+        if ext_parts[0] != MAKO_EXT:
+            # Strange first part:
+            raise ExceptInvalidExtension(fl_path)
+
+        props.should_render = True
+        props.should_copy = False
+        props.target_ext = ext_parts[1]
+        props.output_expected = True
+
+    elif fl_ext == MAKO_EXT:
+        props.should_render = True
+        props.should_copy = False
+        props.target_ext = HTML_EXT
+        props.output_expected = True
+
+    elif fl_ext == MAKO_NO_EXT:
+        props.should_render = True
+        props.should_copy = False
+        props.target_ext = None
+        props.output_expected = False
+
+    elif fl_ext == MAKO_ABSTRACT_EXT:
+        props.should_render = False
+        props.should_copy = False
+        props.target_ext = None
+        props.output_expected = False
+
+    elif fl_ext in COPY_EXTS:
+        props.should_render = False
+        props.should_copy = True
+
+    # Sanity checks:
+    assert not (props.should_copy and props.should_render)
+    assert not ((props.target_ext is None) and props.output_expected)
+
+    return props
 
 def rel_file_link(context,file_path):
     """
@@ -34,22 +125,6 @@ def inspect_temp(context,file_path,key):
 
     return metadata
 
-
-def _get_extension(filename):
-    """
-    Get the extension of a file (What comes right after the last dot).
-    """
-    return filename.split(".")[-1]
-
-
-def _change_extension(filename,new_ext):
-    """
-    Change the extension of a file to be new_ext
-    """
-    last_dot = filename.rfind(".")
-    return filename[:last_dot] + "." + new_ext
-
-
 def inspect_directory(context,dir_name,props):
     """
     Get metadata from all files inside a directory.
@@ -65,7 +140,7 @@ def inspect_directory(context,dir_name,props):
     # Iterate over all files inside the blog:
     for root,dirs,files in os.walk(dir_path):
         for fl in files:
-            if not _get_extension(fl) == MAKO_EXT:
+            if not get_extension(fl) == MAKO_EXT:
                 # We only care about files with mako extension.
                 continue
 
@@ -78,7 +153,7 @@ def inspect_directory(context,dir_name,props):
 
             # Add to list:
             entry = {}
-            fl_rel_html = _change_extension(fl_rel,HTML_EXT)
+            fl_rel_html = change_extension(fl_rel,HTML_EXT)
             entry["link_addr"] = os.path.join(dir_name,fl_rel_html)
             entry["props"] = {}
             for prop in props:

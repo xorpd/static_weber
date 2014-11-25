@@ -11,6 +11,8 @@ from mako.lookup import TemplateLookup
 import os
 import shutil
 
+import lib.utils
+
 import collections
 
 # The content's directory name:
@@ -78,69 +80,6 @@ def clean_empty_dirs(root_dir,ignore_prefixes=["."]):
         # If there are no files inside the directory, remove it and exit:
         os.rmdir(root_dir)
 
-def get_ext_props(fl_ext):
-    """
-    Get the relevant properties for a given extension.
-    Generally, extension will be one of the following:
-    .mako           -- Rendered into HTML.
-    .makoa          -- Not rendered.
-    .makon          -- Rendered but output is discarded.
-    .mako_XXX       -- Rendered into file of extension XXX with the same name.
-    .jpg,.png,...   -- Copied directly to destination.
-    """
-
-    props = \
-        collections.namedtuple('props',\
-            ['should_render','should_copy','target_ext','output_expected'])
-
-    # Set defaults:
-    props.should_render = False
-    props.should_copy = False
-    props.target_ext = None
-    props.output_expected = False
-
-    if "_" in fl_ext:
-        ext_parts = fl_ext.split("_")
-        if len(ext_parts) > 2:
-            # There are too many parts:
-            raise ExceptInvalidExtension(fl_path)
-        if ext_parts[0] != MAKO_EXT:
-            # Strange first part:
-            raise ExceptInvalidExtension(fl_path)
-
-        props.should_render = True
-        props.should_copy = False
-        props.target_ext = ext_parts[1]
-        props.output_expected = True
-
-    elif fl_ext == MAKO_EXT:
-        props.should_render = True
-        props.should_copy = False
-        props.target_ext = HTML_EXT
-        props.output_expected = True
-
-    elif fl_ext == MAKO_NO_EXT:
-        props.should_render = True
-        props.should_copy = False
-        props.target_ext = None
-        props.output_expected = False
-
-    elif fl_ext == MAKO_ABSTRACT_EXT:
-        props.should_render = False
-        props.should_copy = False
-        props.target_ext = None
-        props.output_expected = False
-
-    elif fl_ext in COPY_EXTS:
-        props.should_render = False
-        props.should_copy = True
-
-    # Sanity checks:
-    assert not (props.should_copy and props.should_render)
-    assert not ((props.target_ext is None) and props.output_expected)
-
-    return props
-
 
 class Website():
     def __init__(self,path):
@@ -183,16 +122,16 @@ class Website():
             for fl in files:
                 # Get full path inside content directory:
                 fl_path = os.path.join(root,fl)
-                fl_ext = get_extension(fl)
+                fl_ext = lib.utils.get_extension(fl)
 
-                props = get_ext_props(fl_ext)
+                props = lib.utils.get_ext_props(fl_ext)
 
 
                 if props.should_render:
                     # Build a template:
                     fl_tmp = Template(filename=fl_path,lookup=wlookup)
                     # Get the filename as target_ext extensioned file:
-                    fl_with_ext = change_extension(fl,props.target_ext)
+                    fl_with_ext = lib.utils.change_extension(fl,props.target_ext)
                     fl_with_ext_output = os.path.join(root_output,fl_with_ext)
 
                     # Render the template:
