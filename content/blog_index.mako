@@ -1,31 +1,19 @@
-<%inherit file="/web_page.makoa"/>
-<%namespace name="bindex" module="content.bindex"/>
+<%inherit file="/entries_page.makoa"/>
 
-<%block name="web_page_header">
-<title>Blog</title>
-</%block>
-
-<%block name="web_page_body">
-<h1>Blog</h1>
-    <%
-        b_entries = bindex.get_blog_entries()
-    %>
-
-    <ul>
-% for b_entry in b_entries:
-<%
-    mdata = b_entry["props"]["post_metadata"]
+<%!
+    entries_dir = "blog"
+    sort_field = "date"
+    reverse = True
 %>
-    ## Show only posts that are not drafts:
-    % if dict.get(mdata,"draft","False") == "False":
 
-	<li>
-        <a href="${b_entry["link_addr"]}">
-        ${mdata["title"]}</a>
-	</li>
-    % endif
-        
-% endfor
-    </ul>
+<%block name="entries_page_header">
+<title>FreedomLayer | Blog</title>
 </%block>
 
+
+<%block name="entries_page_body_begin">
+<h1>Blog</h1>
+</%block>
+
+<%block name="entries_page_body_end">
+</%block>

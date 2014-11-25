@@ -1,31 +1,15 @@
-<%namespace name="conf_general" module="conf.general"/>
-<%namespace name="bindex" module="content.bindex"/>
-<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
+<%inherit file="/entries_feed_page.makoa"/>
+
+<%!
+    entries_dir = "blog"
+    sort_field = "date"
+    reverse = True
+%>
 
 <channel>
+<%block name="entries_feed_page_channel">
 <title>My blog</title>
 <link>https://github.com/xorpd/static_weber</link>
 <description>Example rss for my blog</description>
 <language>en-US</language>
-
-<%
-    b_entries = bindex.get_blog_entries()
-%>
-
-% for b_entry in b_entries:
-<%
-    mdata = b_entry["props"]["post_metadata"]
-%>
-    ## Show only posts that are not drafts:
-    % if dict.get(mdata,"draft","False") == "False":
-        <item>
-        <title>${mdata["title"]}</title>
-        <link>${conf_general.module.WEBSITE_ROOT_ADDR + b_entry["link_addr"]}</link>
-        <description>${mdata["description"]}</description>
-        </item>
-    % endif
-% endfor
-
-</channel>
-</rss>
+</%block>
