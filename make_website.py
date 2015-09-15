@@ -13,6 +13,8 @@ import shutil
 
 import lib.utils
 
+class MakeWebsiteError(Exception): pass
+
 
 # The content's directory name:
 CONTENT_DIR = "content"
@@ -122,11 +124,17 @@ class Website():
                     fl_with_ext = lib.utils.change_extension(fl,props.target_ext)
                     fl_with_ext_output = os.path.join(root_output,fl_with_ext)
 
-                    # Render the template:
-                    res_render = fl_tmp.render(my_filename=fl,\
-                                    my_content_dir=content_path,\
-                                    my_output_dir=output_path,\
-                                    my_rel_dir=rel_root)
+                    try:
+                        # Render the template:
+                        res_render = fl_tmp.render(my_filename=fl,\
+                                        my_content_dir=content_path,\
+                                        my_output_dir=output_path,\
+                                        my_rel_dir=rel_root)
+                    except Exception as e:
+                        raise MakeWebsiteError('Failed rendering '
+                                '{}'.format(fl)) from e
+
+
 
                     if props.render_output:
                         # Write the template's rendering result to a file at
